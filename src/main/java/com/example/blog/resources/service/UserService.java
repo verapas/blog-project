@@ -70,4 +70,21 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Benutzer mit der ID " + id + " konnte nicht gefunden werden!"));
         userRepository.delete(user);
     }
+
+    /**
+     * Findet einen Benutzer anhand des Benutzernamens.
+     */
+    public UserShowDto findByUsername(String username) {
+        User user = this.userRepository.getByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Benutzer " + username + " konnte nicht gefunden werden!"));
+        return userMapper.toShowDto(user);
+    }
+
+    /**
+     * Findet und gibt das User-Entity anhand des Benutzernamens zurück.
+     */
+    public User findUserEntityByUsername(String username) {
+        return this.userRepository.getByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Benutzer " + username + " konnte nicht gefunden werden!"));
+    }
 }
