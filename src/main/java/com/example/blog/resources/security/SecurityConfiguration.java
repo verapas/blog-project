@@ -17,7 +17,7 @@ public class SecurityConfiguration {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeRequests()
-                .requestMatchers("/login", "/register").permitAll()  // Erlaube öffentliche Zugriffe auf diese Endpunkte
+                .requestMatchers("/login", "/users/register").permitAll()  // Erlaube öffentliche Zugriffe auf diese Endpunkte
                 .anyRequest().authenticated()  // Alle anderen Anfragen müssen authentifiziert werden
 
 

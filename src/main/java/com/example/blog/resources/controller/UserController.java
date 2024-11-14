@@ -12,6 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+/**
+ * Verwaltet CRUD-Operationen für User
+ */
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -19,6 +23,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
+    /**
+     * Gibt einen spezifischen Benutzer anhand der ID zurück.
+     * URL: GET http://localhost:8080/users/{id}
+     */
     @GetMapping("/{id}")
     public ResponseEntity<UserShowDto> getUserById(@PathVariable Long id) {
         UserShowDto user = userService.findById(id);
@@ -28,12 +37,22 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+
+    /**
+     * Registriert einen neuen Benutzer.
+     * URL: POST http://localhost:8080/users/register
+     */
     @PostMapping("/register")
     public ResponseEntity<UserShowDto> registerUser(@RequestBody UserCreateDto userDto) {
         UserShowDto registeredUser = userService.create(userDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
     }
 
+
+    /**
+     * Aktualisiert einen bestehenden Benutzer anhand der ID.
+     * URL: PUT http://localhost:8080/users/{id}
+     */
     @PutMapping("/{id}")
     public ResponseEntity<UserShowDto> updateUser(@PathVariable Long id, @RequestBody UserUpdateDto userDto) {
         UserShowDto updatedUser = userService.update(id, userDto);
@@ -43,6 +62,11 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
+
+    /**
+     * Löscht einen Benutzer anhand der ID.
+     * URL: DELETE http://localhost:8080/users/{id}
+     */
     @PostMapping("/{id}")
     public ResponseEntity<Void> deleteUser(
             @PathVariable Long id) {
