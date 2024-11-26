@@ -5,6 +5,10 @@ import com.example.blog.resources.dto.postDto.PostShowDto;
 import com.example.blog.resources.dto.postDto.PostUpdateDto;
 import com.example.blog.resources.entity.Post;
 import com.example.blog.resources.service.PostService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +30,8 @@ public class PostController {
      * Listet alle Posts auf.
      * URL: GET http://localhost:8080/posts
      */
+    @Operation(summary = "Listet alle Posts auf.")
+    @ApiResponse(responseCode = "200", description = "Erfolgreich Liste alle Posts zurückgegeben.")
     @GetMapping
     public ResponseEntity<List<PostShowDto>> getAllPosts() {
         List<PostShowDto> posts = postService.findAll();
@@ -36,8 +42,15 @@ public class PostController {
      * Gibt einen spezifischen Post anhand der ID zurück.
      * URL: GET http://localhost:8080/posts/{id}
      */
+    @Operation(summary = "Gibt einen spezifischen Post anhand der ID zurück.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Post Details erfolgreich zurückgegeben."),
+            @ApiResponse(responseCode = "404", description = "Post nicht gefunden.")
+    })
     @GetMapping("/{id}")
-    public ResponseEntity<PostShowDto> getPostById(@PathVariable Long id) {
+    public ResponseEntity<PostShowDto> getPostById(
+            @Parameter(description = "ID des Posts, der abgerufen werden soll.", example = "1")
+            @PathVariable Long id) {
         PostShowDto post = postService.findById(id);
         if (post == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -49,8 +62,15 @@ public class PostController {
      * Erstellt einen neuen Post.
      * URL: POST http://localhost:8080/posts
      */
+    @Operation(summary = "Erstellt einen neuen Post.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Post erfolgreich erstellt"),
+            @ApiResponse(responseCode = "400", description = "Ungültige Eingabedaten")
+    })
     @PostMapping
-    public ResponseEntity<PostShowDto> createPost(@RequestBody PostCreateDto postDto) {
+    public ResponseEntity<PostShowDto> createPost(
+            @Parameter(description = "Details des zu erstellenden Posts.")
+            @RequestBody PostCreateDto postDto) {
         PostShowDto createdPost = postService.create(postDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
     }
@@ -59,8 +79,18 @@ public class PostController {
      * Aktualisiert einen bestehenden Post anhand der ID.
      * URL: PUT http://localhost:8080/posts/{id}
      */
+    @Operation(summary = "Aktualisiert einen bestehenden Post anhand der ID.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Post erfolgreich aktualisiert."),
+            @ApiResponse(responseCode = "404", description = "Post nicht gefunden."),
+            @ApiResponse(responseCode = "400", description = "Ungültige EIngabedaten")
+    })
     @PutMapping("/{id}")
-    public ResponseEntity<PostShowDto> updatePost(@PathVariable Long id, @RequestBody PostUpdateDto postDto) {
+    public ResponseEntity<PostShowDto> updatePost(
+            @Parameter(description = "ID des zu aktualisierenden Posts", example = "1")
+            @PathVariable Long id,
+            @Parameter(description = "Aktualisierte Details des Posts")
+            @RequestBody PostUpdateDto postDto) {
         PostShowDto updatedPost = postService.update(id, postDto);
         if (updatedPost == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -73,7 +103,14 @@ public class PostController {
      * URL: DELETE http://localhost:8080/posts/{id}
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
+    @Operation(summary = "Löscht einen Post anhand der ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Post erfolgreich gelöscht"),
+            @ApiResponse(responseCode = "404", description = "Post nicht gefunden")
+    })
+    public ResponseEntity<Void> deletePost(
+            @Parameter(description = "ID des zu löschenden Posts", example = "1")
+            @PathVariable Long id) {
         PostShowDto post = postService.findById(id);
         if (post == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

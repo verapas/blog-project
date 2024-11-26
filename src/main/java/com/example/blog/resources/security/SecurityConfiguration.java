@@ -18,6 +18,7 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .authorizeRequests()
                 .requestMatchers("/login", "/users/register").permitAll()  // Erlaube öffentliche Zugriffe auf diese Endpunkte
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/login", "/users/register").permitAll()
                 .anyRequest().authenticated()  // Alle anderen Anfragen müssen authentifiziert werden
 
 
