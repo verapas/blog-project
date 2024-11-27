@@ -14,6 +14,4 @@ public class PostUpdateDto {
     @NotNull
     private String content;
 
-    @NotNull
-    private int duration;
 }

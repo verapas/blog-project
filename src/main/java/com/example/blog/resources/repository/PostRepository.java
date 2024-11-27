@@ -9,12 +9,6 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-//    Die Methode findById(Long id) ist bereits in CrudRepository oder JpaRepository enthalten
-//    /**
-//     * Benutzerdefinierte Abfrage, um einen Post anhand seiner ID zu finden.
-//     */
-//    @Query("SELECT p FROM Post p WHERE p.id = :id")
-//    Post findById(@Param("id") Long id);
 
     /**
      * Methode, um alle Posts eines bestimmten Benutzers zu finden.

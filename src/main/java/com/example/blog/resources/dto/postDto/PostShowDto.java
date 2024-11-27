@@ -18,9 +18,6 @@ public class PostShowDto {
     private String content;
 
     @NotNull
-    private int duration;
-
-    @NotNull
     private Long userId;
 
     @NotNull

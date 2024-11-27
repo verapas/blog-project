@@ -1,5 +1,6 @@
 package com.example.blog.resources.service;
 
+import com.example.blog.resources.dto.userDto.LoginRequestDto;
 import com.example.blog.resources.entity.User;
 import com.example.blog.exception.ResourceNotFoundException;
 import com.example.blog.resources.repository.UserRepository;
@@ -8,6 +9,7 @@ import com.example.blog.resources.dto.userDto.UserShowDto;
 import com.example.blog.resources.dto.userDto.UserUpdateDto;
 import com.example.blog.resources.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -23,6 +25,11 @@ public class UserService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+
 
     /**
      * Findet einen Benutzer anhand der ID und gibt ihn als UserShowDto zurück.
@@ -47,6 +54,7 @@ public class UserService {
      */
     public UserShowDto create(UserCreateDto dto) {
         User user = userMapper.toEntity(dto);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = this.userRepository.save(user);
         return userMapper.toShowDto(savedUser);
     }
@@ -87,4 +95,16 @@ public class UserService {
         return this.userRepository.getByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Benutzer " + username + " konnte nicht gefunden werden!"));
     }
+
+    /**
+     * Überprüft die Anmeldedaten eines Benutzers und gibt den Benutzer zurück, wenn die Anmeldedaten korrekt sind.
+     */
+    public User getUserWithCredentials(LoginRequestDto loginRequestDto) {
+        User user = this.findUserEntityByUsername(loginRequestDto.getUsername());
+        if (user != null && passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+            return user;
+        }
+        return null;
+    }
+
 }

@@ -14,11 +14,5 @@ public class PostCreateDto {
     @NotNull
     private String content;
 
-    @NotNull
-    private int duration;
 
-    @NotNull
-    private Long userId;
-
-    private String createdAt;
 }

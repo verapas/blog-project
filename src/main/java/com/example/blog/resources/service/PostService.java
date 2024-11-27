@@ -4,6 +4,7 @@ import com.example.blog.resources.dto.postDto.PostCreateDto;
 import com.example.blog.resources.dto.postDto.PostShowDto;
 import com.example.blog.resources.entity.Post;
 import com.example.blog.exception.ResourceNotFoundException;
+import com.example.blog.resources.entity.User;
 import com.example.blog.resources.repository.PostRepository;
 import com.example.blog.resources.dto.postDto.PostUpdateDto;
 import com.example.blog.resources.mapper.PostMapper;
@@ -43,8 +44,10 @@ public class PostService {
     /**
      * Erstellt einen neuen Post basierend auf den Daten im PostCreateDto.
      */
-    public PostShowDto create(PostCreateDto dto) {
+    public PostShowDto create(PostCreateDto dto, User user) {
         Post post = postMapper.toEntity(dto);
+        post.setUser(user);
+
         Post savedPost = this.postRepository.save(post);
         return postMapper.toShowDto(savedPost);
     }

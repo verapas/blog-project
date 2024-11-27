@@ -14,19 +14,16 @@ public interface PostMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "title", target = "title")
     @Mapping(source = "content", target = "content")
-    @Mapping(source = "duration", target = "duration")
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "createdAt", target = "createdAt")
     PostShowDto toShowDto(Post post);
 
     @Mapping(source = "title", target = "title")
     @Mapping(source = "content", target = "content")
-    @Mapping(source = "duration", target = "duration")
-    @Mapping(source = "userId", target = "user.id")
+//    @Mapping(source = "userId", target = "user.id")
     Post toEntity(PostCreateDto dto);
 
     @Mapping(source = "title", target = "title")
     @Mapping(source = "content", target = "content")
-    @Mapping(source = "duration", target = "duration")
     void updateEntity(PostUpdateDto dto, @MappingTarget Post post);
 }

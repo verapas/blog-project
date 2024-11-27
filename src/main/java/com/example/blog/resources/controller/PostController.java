@@ -4,7 +4,10 @@ import com.example.blog.resources.dto.postDto.PostCreateDto;
 import com.example.blog.resources.dto.postDto.PostShowDto;
 import com.example.blog.resources.dto.postDto.PostUpdateDto;
 import com.example.blog.resources.entity.Post;
+import com.example.blog.resources.entity.User;
+import com.example.blog.resources.security.SecurityConfiguration;
 import com.example.blog.resources.service.PostService;
+import com.example.blog.resources.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,6 +15,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +30,8 @@ public class PostController {
 
     @Autowired
     private PostService postService;
+    @Autowired
+    private UserService userService;
 
     /**
      * Listet alle Posts auf.
@@ -71,7 +78,17 @@ public class PostController {
     public ResponseEntity<PostShowDto> createPost(
             @Parameter(description = "Details des zu erstellenden Posts.")
             @RequestBody PostCreateDto postDto) {
-        PostShowDto createdPost = postService.create(postDto);
+
+        //Aktuellen User aus dem Security-Context holen
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInUsername = authentication.getName();
+
+        //Benutzer aus der Datenbank laden
+        User user = userService.findUserEntityByUsername(loggedInUsername);
+
+        // Post erstellen mit dem authentifizierten Benutzer
+        PostShowDto createdPost = postService.create(postDto, user);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
     }
 

@@ -21,13 +21,16 @@ public class Post {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDate createdAt;
-
-    @Column(nullable = false)
-    private int duration;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    // Diese Methode wird automatisch vor dem speichern aufgerufen
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDate.now();
+    }
 }

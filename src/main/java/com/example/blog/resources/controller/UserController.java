@@ -1,10 +1,9 @@
 package com.example.blog.resources.controller;
 
-import com.example.blog.resources.dto.userDto.UserCreateDto;
-import com.example.blog.resources.dto.userDto.UserDetailDto;
-import com.example.blog.resources.dto.userDto.UserShowDto;
-import com.example.blog.resources.dto.userDto.UserUpdateDto;
+import com.example.blog.resources.dto.userDto.*;
 import com.example.blog.resources.entity.User;
+import com.example.blog.resources.security.TokenService;
+import com.example.blog.resources.security.TokenWrapper;
 import com.example.blog.resources.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,6 +24,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TokenService tokenService;
 
 
     /**
@@ -94,7 +96,7 @@ public class UserController {
      * Löscht einen Benutzer anhand der ID.
      * URL: DELETE http://localhost:8080/users/{id}
      */
-    @PostMapping("/{id}")
+    @DeleteMapping("/{id}")
     @Operation(summary = "Löscht einen Benutzer anhand der ID")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Benutzer erfolgreich gelöscht"),
@@ -109,6 +111,27 @@ public class UserController {
         }
         userService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+
+    @PostMapping("/login")
+    @Operation(summary = "Authentifiziert den Benutzer", description = "überprüft die Anmeldedaten und gibt einen JWT zurück, sofern die Authentifizierung gelingt")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Anmeldung erfolgreich, Token zurückgegeben"),
+            @ApiResponse(responseCode = "401", description = "Ungültige Anmeldedaten")
+    })
+    public ResponseEntity<TokenWrapper> login(
+            @Parameter(description = "Anmeldedaten des Benutzers")
+            @RequestBody LoginRequestDto loginRequestDto) {
+        User user = this.userService.getUserWithCredentials(loginRequestDto);
+        if (user != null) {
+            TokenWrapper tokenWrapper = new TokenWrapper();
+            String token = this.tokenService.generateToken(user);
+            tokenWrapper.setToken(token);
+            return ResponseEntity.ok(tokenWrapper);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 }
 
