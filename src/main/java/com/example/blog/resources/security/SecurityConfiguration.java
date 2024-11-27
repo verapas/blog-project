@@ -22,13 +22,13 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .authorizeRequests()
-                .requestMatchers("/users/login", "/users/register").permitAll()  // Erlaube öffentliche Zugriffe auf diese Endpunkte
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/users/login", "/users/register").permitAll() //http://localhost:8080/swagger-ui/index.html
-                .requestMatchers(HttpMethod.POST, "/posts").hasAnyRole("USER", "ADMIN") // Berechtigung für Post erstellen
-                .anyRequest().authenticated(); // Alle anderen Anfragen müssen authentifiziert werden
-//                 .and()
-//                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class) // Stelle sicher, dass dieser Filter vor anderen hinzugefügt wird
+                .authorizeRequests(authorize -> authorize
+                        .requestMatchers("/users/login", "/users/register").permitAll() // Erlaube öffentliche Zugriffe auf diese Endpunkte
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Öffentliche Dokumentationsendpunkte
+                        .requestMatchers(HttpMethod.POST, "/posts").hasAnyRole("USER", "ADMIN") // Berechtigung für das Erstellen von Posts
+                        .anyRequest().authenticated() // Alle anderen Anfragen müssen authentifiziert sein
+                );
 
         return http.build();
     }
