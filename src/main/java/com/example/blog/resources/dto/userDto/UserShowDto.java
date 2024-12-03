@@ -8,12 +8,8 @@ import lombok.Data;
 @Data
 public class UserShowDto {
 
-    @NotNull
     private Long id;
-
-    @NotNull
     private String username;
-
-    @NotNull
+    private String email;
     private String role;
 }

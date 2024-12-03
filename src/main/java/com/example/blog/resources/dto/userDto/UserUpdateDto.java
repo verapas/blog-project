@@ -8,11 +8,8 @@ import lombok.Data;
 @Data
 public class UserUpdateDto {
 
-    @NotNull
     private String username;
-
+    private String email;
     private String password;
-
-    @NotNull
     private String role;
 }
