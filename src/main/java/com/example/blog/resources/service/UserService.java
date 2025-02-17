@@ -50,10 +50,11 @@ public class UserService {
     }
 
     /**
-     * Erstellt einen neuen Benutzer basierend auf den Daten im UserCreateDto.
+     * Erstellt einen neuen Benutzer basierend auf den Daten im UserCreateDto. Der Benutzer hat standardmässig "USER" als rolle
      */
     public UserShowDto create(UserCreateDto dto) {
         User user = userMapper.toEntity(dto);
+        user.setRole("USER");
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = this.userRepository.save(user);
         return userMapper.toShowDto(savedUser);
@@ -79,28 +80,20 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    /**
-     * Findet einen Benutzer anhand des Benutzernamens.
-     */
-    public UserShowDto findByUsername(String username) {
-        User user = this.userRepository.getByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Benutzer " + username + " konnte nicht gefunden werden!"));
-        return userMapper.toShowDto(user);
-    }
 
     /**
      * Findet und gibt das User-Entity anhand des Benutzernamens zurück.
      */
-    public User findUserEntityByUsername(String username) {
-        return this.userRepository.getByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Benutzer " + username + " konnte nicht gefunden werden!"));
+    public User findUserEntityByEmail(String email) {
+        return this.userRepository.getByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Benutzer " + email + " konnte nicht gefunden werden!"));
     }
 
     /**
      * Überprüft die Anmeldedaten eines Benutzers und gibt den Benutzer zurück, wenn die Anmeldedaten korrekt sind.
      */
     public User getUserWithCredentials(LoginRequestDto loginRequestDto) {
-        User user = this.findUserEntityByUsername(loginRequestDto.getUsername());
+        User user = this.findUserEntityByEmail(loginRequestDto.getEmail());
         if (user != null && passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
             return user;
         }

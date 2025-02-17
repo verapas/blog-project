@@ -7,11 +7,13 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none  # Automatische Schemaanpassung deaktiviert, da Flyway nun das Schema managed
     show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
 
   flyway:
-    enabled: false
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration

@@ -81,10 +81,10 @@ public class PostController {
 
         //Aktuellen User aus dem Security-Context holen
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String loggedInUsername = authentication.getName();
+        String loggedInEmail = authentication.getName();
 
         //Benutzer aus der Datenbank laden
-        User user = userService.findUserEntityByUsername(loggedInUsername);
+        User user = userService.findUserEntityByEmail(loggedInEmail);
 
         // Post erstellen mit dem authentifizierten Benutzer
         PostShowDto createdPost = postService.create(postDto, user);

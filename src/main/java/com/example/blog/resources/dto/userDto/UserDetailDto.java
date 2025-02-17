@@ -13,7 +13,10 @@ public class UserDetailDto {
     private Long id;
 
     @NotNull
-    private String username;
+    private String firstName;
+
+    @NotNull
+    private String lastName;
 
     @Email
     @NotNull

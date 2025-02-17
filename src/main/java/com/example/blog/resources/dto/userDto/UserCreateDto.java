@@ -10,7 +10,10 @@ import lombok.Data;
 public class UserCreateDto {
 
     @NotNull
-    private String username;
+    private String firstName;
+
+    @NotNull
+    private String lastName;
 
     @Email
     @NotNull
@@ -19,6 +22,6 @@ public class UserCreateDto {
     @NotNull
     private String password;
 
-    @NotNull
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY, description = "Automatisch auf 'USER' gesetzt")
     private String role;
 }

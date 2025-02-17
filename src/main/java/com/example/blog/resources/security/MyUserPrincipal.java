@@ -28,12 +28,15 @@ public class MyUserPrincipal implements UserDetails {
         return user.getPassword();
     }
 
+    // Implementierung von getUsername() mit E-Mail als Identifikator
     @Override
     public String getUsername() {
-        return user.getUsername();
+        return user.getEmail();
     }
 
-    public  String getEmail() {return user.getEmail();}
+    public String getEmail() {
+        return user.getEmail();
+    }
 
     @Override
     public boolean isAccountNonExpired() {

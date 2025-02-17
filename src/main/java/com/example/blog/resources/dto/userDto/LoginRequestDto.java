@@ -7,9 +7,6 @@ import lombok.Data;
 @Data
 public class LoginRequestDto {
 
-    @NotNull
-    private String username;
-
     @Email
     @NotNull
     private String email;
