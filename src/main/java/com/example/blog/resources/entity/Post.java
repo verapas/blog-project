@@ -17,8 +17,7 @@ public class Post {
     @Column(nullable = false, length = 254)
     private String title;
 
-    @Lob
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", nullable = false, columnDefinition = "MEDIUMTEXT")
     private String content;
 
     @Column(nullable = false, updatable = false)
