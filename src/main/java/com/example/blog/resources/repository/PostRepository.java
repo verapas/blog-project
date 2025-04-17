@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
@@ -20,4 +21,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
      * Methode, um Posts nach Titel zu durchsuchen.
      */
     List<Post> findByTitleContaining(String title);
+
+    /**
+     * Methode, um den neuesten Post eines bestimmten Benutzers zu finden.
+     */
+    Optional<Post> findTopByUserIdOrderByIdDesc(Long userId);
+
+
 }

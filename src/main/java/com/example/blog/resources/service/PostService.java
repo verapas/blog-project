@@ -71,4 +71,14 @@ public class PostService {
                 .orElseThrow(() -> new ResourceNotFoundException("Post mit der ID " + id + " konnte nicht gefunden werden!"));
         postRepository.delete(post);
     }
+
+    /**
+     * Findet den zuletzt erstellten Post des angegebenen Benutzers.
+     */
+    public PostShowDto findLatestByUser(Long userId) {
+        Post latestPost = postRepository.findTopByUserIdOrderByIdDesc(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Es wurde kein Post für diesen Benutzer gefunden!"));
+        return postMapper.toShowDto(latestPost);
+    }
+
 }

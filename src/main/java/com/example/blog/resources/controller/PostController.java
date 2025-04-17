@@ -135,4 +135,23 @@ public class PostController {
         postService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * Gibt den zuletzt erstellten Post des angemeldeten Benutzers zurück.
+     * URL: GET http://localhost:8080/posts/latest
+     */
+    @Operation(summary = "Gibt den zuletzt erstellten Post des angemeldeten Benutzers zurück.")
+    @ApiResponse(responseCode = "200", description = "Letzter Post erfolgreich zurückgegeben.")
+    @ApiResponse(responseCode = "404", description = "Kein Post für diesen Benutzer gefunden.")
+    @GetMapping("/latest")
+    public ResponseEntity<PostShowDto> getLatestPost() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String loggedInEmail = authentication.getName();
+
+        User user = userService.findUserEntityByEmail(loggedInEmail);
+
+        PostShowDto latestPost = postService.findLatestByUser(user.getId());
+        return ResponseEntity.ok(latestPost);
+    }
+
 }
