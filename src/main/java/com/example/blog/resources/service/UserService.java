@@ -66,11 +66,16 @@ public class UserService {
     public UserShowDto update(Long id, UserUpdateDto dto) {
         User user = this.userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Benutzer mit der ID " + id + " konnte nicht gefunden werden!"));
+
         userMapper.updateEntity(dto, user);
+
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+
         User updatedUser = userRepository.save(user);
         return userMapper.toShowDto(updatedUser);
     }
-
     /**
      * Löscht einen Benutzer anhand der ID.
      */

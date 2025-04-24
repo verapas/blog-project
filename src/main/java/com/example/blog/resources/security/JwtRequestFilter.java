@@ -2,6 +2,7 @@ package com.example.blog.resources.security;
 
 import com.example.blog.resources.entity.User;
 import com.example.blog.resources.service.UserService;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
@@ -10,6 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -65,19 +68,29 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             logger.warn("Authorization Header ist entweder null oder hat kein Bearer-Präfix.");
         }
 
-        // Setze den SecurityContext, falls eine E-Mail vorhanden ist und der Benutzer nicht schon authentifiziert ist
+// Setze den SecurityContext, falls E-Mail im Token ist und noch keine Authentifizierung gesetzt wurde
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Verwende hier die Methode, die den User anhand der E-Mail sucht
-            User user = userService.findUserEntityByEmail(email);
-            if (user != null) {
-                MyUserPrincipal userPrincipal = new MyUserPrincipal(user);
-                logger.info("Benutzerrolle: " + user.getRole());
-                UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(userPrincipal, null, userPrincipal.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                logger.info("Benutzer " + email + " wurde erfolgreich authentifiziert mit Rollen: " + userPrincipal.getAuthorities());
-            } else {
-                logger.warn("Benutzer mit der E-Mail konnte nicht gefunden werden.");
+            try {
+                Claims claims = Jwts.parser()
+                        .setSigningKey(tokenService.getSecretKey())
+                        .parseClaimsJws(jwt)
+                        .getBody();
+
+                String role = claims.get("roles", String.class); // z. B. "ROLE_USER"
+                if (role != null) {
+                    List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
+                    UsernamePasswordAuthenticationToken authenticationToken =
+                            new UsernamePasswordAuthenticationToken(email, null, authorities);
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                    logger.info("JWT-Authentifizierung erfolgreich: " + email + " mit Rolle: " + role);
+                } else {
+                    logger.warn("Keine Rolle im Token gefunden.");
+                }
+
+            } catch (Exception e) {
+                logger.error("Fehler beim Verarbeiten des Tokens: " + e.getMessage());
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return;
             }
         }
 
